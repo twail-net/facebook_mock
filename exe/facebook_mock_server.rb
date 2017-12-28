@@ -1,10 +1,11 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'facebook_mock/fb_api.rb'
+require 'facebook_mock'
 require 'net/http'
 
 # Thread.new do
-  FbApi.run!
+  FacebookMock::FbApi.run!
 # end
 
 # sleep 1
