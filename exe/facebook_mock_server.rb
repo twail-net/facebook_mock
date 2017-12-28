@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './fb_api.rb'
+require 'facebook_mock/fb_api.rb'
 require 'net/http'
 
 # Thread.new do

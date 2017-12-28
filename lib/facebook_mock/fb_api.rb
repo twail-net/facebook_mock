@@ -2,7 +2,7 @@
 
 require 'sinatra/base'
 
-require 'lib/database'
+require 'facebook_mock/database'
 
 module FacebookMock
   class FbApi < Sinatra::Base
