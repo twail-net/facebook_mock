@@ -20,6 +20,11 @@ module FacebookMock
       }
     end
 
+    def clear
+      @aliases = {}
+      @db = {}
+    end
+
     private
 
     def dealias(id)

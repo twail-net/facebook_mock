@@ -3,7 +3,7 @@
 RSpec.describe FacebookMock::Database do
   subject { described_class.new }
 
-  describe 'create_fb_page' do
+  describe '#create_fb_page' do
     before { subject.create_fb_page('someid') }
 
     it 'stores a new facebook page in the database' do
@@ -12,6 +12,16 @@ RSpec.describe FacebookMock::Database do
 
     it 'does not allow to create duplicates' do
       expect { subject.create_fb_page('someid') }.to raise_error('Alias already exists')
+    end
+  end
+
+  describe '#clear' do
+    before { subject.create_fb_page('someid') }
+
+    it 'clears the database' do
+      expect(subject.find('someid')[:id]).not_to be_nil
+      subject.clear
+      expect(subject.find('someid')).to be_nil
     end
   end
 end
