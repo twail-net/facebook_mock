@@ -9,12 +9,7 @@ RSpec.describe FacebookMock::FbApi do
     JSON.parse(last_response.body)
   end
 
-  # rubocop:disable BeforeAfterAll
-  # before(:all) { described_class.run_in_background! }
-
   after { described_class.db.clear }
-  # after(:all) { described_class.stop! }
-  # rubocop:enable BeforeAfterAll
 
   describe 'get object id' do
     context 'when the object exists' do
