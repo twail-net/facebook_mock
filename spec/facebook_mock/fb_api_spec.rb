@@ -33,8 +33,8 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/1234"
         expect(json_body).to eq(
           "error" => {
-            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to missing " \
-              " permissions, or does not support this operation. Please read the Graph API documentation at " \
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              " missing permissions, or does not support this operation. Please read the Graph API documentation at " \
               "https://developers.facebook.com/docs/graph-api",
             "type" => "GraphMethodException",
             "code" => 100,

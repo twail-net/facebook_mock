@@ -20,8 +20,6 @@ module FacebookMock
       FbApi.db.find(params['id'])
     end
 
-    error ApiError do |e|
-      e.to_json
-    end
+    error ApiError, &:to_json
   end
 end
