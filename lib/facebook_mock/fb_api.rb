@@ -11,9 +11,17 @@ module FacebookMock
     @db = Database.new
     class << self; attr_reader :db end
 
+    def self.run_in_background!
+      Thread.new { run! }
+    end
+
     get "/#{FBV}/:id" do
       # TODO: the id can also be an alias
-      @db.find(params['id'])
+      FbApi.db.find(params['id'])
+    end
+
+    error ApiError do |e|
+      e.to_json
     end
   end
 end

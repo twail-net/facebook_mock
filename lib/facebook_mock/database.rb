@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'facebook_mock/api_error'
 module FacebookMock
   class Database
     def initialize
@@ -9,7 +10,9 @@ module FacebookMock
     end
 
     def find(id)
-      db[dealias(id)]
+      did = dealias(id)
+      raise ApiError.not_found did unless db.key? did
+      db[did]
     end
 
     def create_fb_page(aliasid, name: nil)
@@ -28,7 +31,10 @@ module FacebookMock
     private
 
     def dealias(id)
-      id.match?(/^\d+$/) ? id : @aliases[id]
+      return id if id.match?(/^\d+$/)
+      raise ApiError.alias_not_found(id) unless @aliases.key? id
+
+      @aliases[id]
     end
 
     def new_alias(aliasid)
@@ -41,7 +47,7 @@ module FacebookMock
 
     def new_id
       # TOOD: this is not thread-safe
-      @id += 1
+      (@id += 1).to_s
     end
 
     attr_reader :db

@@ -21,7 +21,7 @@ RSpec.describe FacebookMock::Database do
     it 'clears the database' do
       expect(subject.find('someid')[:id]).not_to be_nil
       subject.clear
-      expect(subject.find('someid')).to be_nil
+      expect { subject.find('someid') }.to raise_error FacebookMock::ApiError
     end
   end
 end
