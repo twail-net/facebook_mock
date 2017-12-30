@@ -17,7 +17,7 @@ module FacebookMock
 
     get "/#{FBV}/:id" do
       # TODO: the id can also be an alias
-      FbApi.db.find(params['id'])
+      FbApi.db.find(params['id']).to_json
     end
 
     error ApiError, &:to_json

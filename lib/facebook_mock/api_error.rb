@@ -15,7 +15,7 @@ module FacebookMock
 
     def self.not_found(id)
       ApiError.new(
-        message: "Unsupported get request. Object with ID '#{id}' does not exist, cannot be loaded due to missing " \
+        message: "Unsupported get request. Object with ID '#{id}' does not exist, cannot be loaded due to missing" \
           " permissions, or does not support this operation. Please read the Graph API documentation at " \
           "https://developers.facebook.com/docs/graph-api",
         type: "GraphMethodException",

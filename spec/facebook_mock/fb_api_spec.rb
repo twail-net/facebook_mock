@@ -19,7 +19,7 @@ RSpec.describe FacebookMock::FbApi do
 
       it 'fetches a facebook page using its id' do
         get "/v2.10/#{pageid}"
-        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(pageid)
       end
 
       it 'fetches a facebook page using its alias' do
@@ -34,7 +34,7 @@ RSpec.describe FacebookMock::FbApi do
         expect(json_body).to eq(
           "error" => {
             "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
-              " missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
               "https://developers.facebook.com/docs/graph-api",
             "type" => "GraphMethodException",
             "code" => 100,
