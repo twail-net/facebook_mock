@@ -19,12 +19,14 @@ RSpec.describe FacebookMock::FbApi do
 
       it 'fetches a facebook page using its id' do
         get "/v2.10/#{pageid}"
+        expect(last_response).to be_ok
         expect(json_body['id']).to eq(pageid)
       end
 
       it 'fetches a facebook page using its alias' do
         get "/v2.10/mytwail"
         expect(last_response).to be_ok
+        expect(json_body['id']).to eq(pageid)
       end
     end
 
