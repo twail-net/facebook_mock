@@ -7,11 +7,13 @@ require 'facebook_mock/database'
 module FacebookMock
   class FbApi < Sinatra::Base
     FBV = 'v2.10'
-    DB = Database.new
+
+    @db = Database.new
+    class << self; attr_reader :db end
 
     get "/#{FBV}/:id" do
       # TODO: the id can also be an alias
-      DB.find(params['id'])
+      @db.find(params['id'])
     end
   end
 end
