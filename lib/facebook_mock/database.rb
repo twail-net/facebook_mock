@@ -92,7 +92,7 @@ module FacebookMock
       end
     end
 
-    # assigned users is a json of the assigned users with their respective
+    # assigned users is a list of json of the assigned users with their respective
     # ids, permitted_roles and access_status
     def set_assigned_users(page_id, assigned_users)
       raise ApiError.edge_not_existing("assigned_users") unless @classes[page_id] == "fb_page"
@@ -128,21 +128,44 @@ module FacebookMock
       { id: ad_acc_id, insights: object_ids.tr('[]', '').split(",").map { |id| ad_acc[:insights][id] } }
     end
 
-    def get_assigned_users(page_id)
+    def get_assigned_users(page_id, fields)
       raise ApiError.edge_not_existing("assigned_users") unless @classes[page_id] == "fb_page"
-      { id: page_id, assigned_users: FbApi.db.find(page_id)[:assigned_users] }
+      return { id: page_id, data: FbApi.db.find(page_id)[:assigned_users] } if fields.nil?
+      users = []
+      FbApi.db.find(page_id)[:assigned_users].each do |user|
+        current = {}
+        current["permitted_roles"] = user["permitted_roles"] if fields.contains?("permitted_roles")
+        current["access_status"] = user["access_status"] if fields.contains?("access_status")
+        users << current
+      end
+      { id: page_id, data: users }
     end
 
     def get_pages(business_acc_id)
       raise ApiError.edge_not_existing("pages") unless @classes[business_acc_id] == "business_account"
       business_acc = FbApi.db.find(business_acc_id)
-      { id: business_acc_id, pages: business_acc[:pages] }
+      { id: business_acc_id, data: business_acc[:pages] }
     end
 
-    def get_ads(ad_set_id)
+    def get_ads(ad_set_id, fields)
       raise ApiError.edge_not_existing("ads") unless @classes[ad_set_id] == "ad_set"
       ad_set = FbApi.db.find(ad_set_id)
-      { id: ad_set_id, ads: ad_set[:ads] }
+      return { id: ad_set_id, data: ad_set[:ads] } if fields.nil?
+      ads = []
+      ad_set[:ads].each do |ad_id|
+        current = {}
+        ad = FbApi.db.find(ad_id)
+        current["effective_status"] = ad["status"] if fields.contains?("effective_status")
+        current["previews"] = { "data" => [{ "body" => ad["preview"] }] } if fields.contains?("previews")
+        ads << current
+      end
+      { id: ad_set_id, data: ads }
+    end
+
+    def get_adcreatives(ad_id)
+      raise ApiError.edge_not_existing("adcreatives") unless @classes[ad_id] == "ad"
+      ad = FbApi.db.find(ad_id)
+      { id: ad_id, data: ad[:adcreatives] } # TODO
     end
 
     private

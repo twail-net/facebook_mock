@@ -287,8 +287,8 @@ RSpec.describe FacebookMock::FbApi do
       before do
         described_class.db.set_assigned_users(
           id,
-          [{ id: 258_924_589, permitted_roles: %w[INSIGHTS_ANALYST ADVERTISER], status: "CONFIRMED" },
-           { id: 485_695_791, permitted_roles: %w[ADVERTISER], status: "PENDING" }]
+          [{ id: 258_924_589, permitted_roles: %w[INSIGHTS_ANALYST ADVERTISER], access_status: "CONFIRMED" },
+           { id: 485_695_791, permitted_roles: %w[ADVERTISER], access_status: "PENDING" }]
         )
       end
 
@@ -296,9 +296,9 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/#{id}/assigned_users"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['assigned_users']).to eq(
-          [{ "id" => 258_924_589, "permitted_roles" => %w[INSIGHTS_ANALYST ADVERTISER], "status" => "CONFIRMED" },
-           { "id" => 485_695_791, "permitted_roles" => %w[ADVERTISER], "status" => "PENDING" }]
+        expect(json_body['data']).to eq(
+          [{ "id" => 258_924_589, "permitted_roles" => %w[INSIGHTS_ANALYST ADVERTISER], "access_status" => "CONFIRMED" },
+           { "id" => 485_695_791, "permitted_roles" => %w[ADVERTISER], "access_status" => "PENDING" }]
         )
       end
     end
@@ -312,8 +312,8 @@ RSpec.describe FacebookMock::FbApi do
         expect do
           described_class.db.set_assigned_users(
             id,
-            [{ id: 258_924_589, permitted_roles: %w[INSIGHTS_ANALYST ADVERTISER], status: "CONFIRMED" },
-             { id: 485_695_791, permitted_roles: %w[ADVERTISER], status: "PENDING" }]
+            [{ id: 258_924_589, permitted_roles: %w[INSIGHTS_ANALYST ADVERTISER], access_status: "CONFIRMED" },
+             { id: 485_695_791, permitted_roles: %w[ADVERTISER], access_status: "PENDING" }]
           )
         end.to raise_error(FacebookMock::ApiError)
       end
@@ -345,7 +345,7 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/#{id}/ads"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['ads']).to eq(%w[45248 84358 546995])
+        expect(json_body['data']).to eq(%w[45248 84358 546995])
       end
     end
 
@@ -385,7 +385,7 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/#{id}/pages"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['pages']).to eq(%w[45248 84358 546995])
+        expect(json_body['data']).to eq(%w[45248 84358 546995])
       end
     end
 
