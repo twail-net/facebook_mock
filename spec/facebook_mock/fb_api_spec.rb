@@ -269,9 +269,9 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/#{id}/insights?ids=[12345]"
         expect(json_body).to eq(
           "error" => {
-            "message" => "(#TODO fix error code) The edge insights, you requested does not exist for this node.",
-            "type" => "GraphMethodException",
-            "code" => 0,
+            "message" => "(#803) The edge insights, you requested does not exist for this node.",
+            "type" => "OAuthException",
+            "code" => 803,
           }
         )
       end
@@ -279,11 +279,11 @@ RSpec.describe FacebookMock::FbApi do
   end
 
   describe 'writing and reading assigned_users' do
-    let(:id) { described_class.db.create_fb_page("mytwail")[:id] }
+    context 'with a fb_page' do
+      let(:id) { described_class.db.create_fb_page("mytwail")[:id] }
 
-    before { id } # force creation of the fb page
+      before { id } # force creation of the fb page
 
-    context 'when the object exists' do
       before do
         described_class.db.set_assigned_users(
           id,
@@ -299,6 +299,33 @@ RSpec.describe FacebookMock::FbApi do
         expect(json_body['assigned_users']).to eq(
           [{ "id" => 258_924_589, "permitted_roles" => %w[INSIGHTS_ANALYST ADVERTISER], "status" => "CONFIRMED" },
            { "id" => 485_695_791, "permitted_roles" => %w[ADVERTISER], "status" => "PENDING" }]
+        )
+      end
+    end
+
+    context 'with a campaign' do
+      let(:id) { described_class.db.create_campaign[:id] }
+
+      before { id } # force creation of the campaign
+
+      it 'is not possible to set the insights' do
+        expect do
+          described_class.db.set_assigned_users(
+            id,
+            [{ id: 258_924_589, permitted_roles: %w[INSIGHTS_ANALYST ADVERTISER], status: "CONFIRMED" },
+             { id: 485_695_791, permitted_roles: %w[ADVERTISER], status: "PENDING" }]
+          )
+        end.to raise_error(FacebookMock::ApiError)
+      end
+
+      it 'is not possible to read the insights' do
+        get "/v2.10/#{id}/assigned_users"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "(#803) The edge assigned_users, you requested does not exist for this node.",
+            "type" => "OAuthException",
+            "code" => 803,
+          }
         )
       end
     end
