@@ -141,8 +141,8 @@ module FacebookMock
       users = []
       FbApi.db.find(page_id)[:assigned_users].each do |user|
         current = {}
-        current["permitted_roles"] = user["permitted_roles"] if fields.contains?("permitted_roles")
-        current["access_status"] = user["access_status"] if fields.contains?("access_status")
+        current["permitted_roles"] = user["permitted_roles"] if fields.include?("permitted_roles")
+        current["access_status"] = user["access_status"] if fields.include?("access_status")
         users << current
       end
       { id: page_id, data: users }
@@ -162,8 +162,8 @@ module FacebookMock
       ad_set[:ads].each do |ad_id|
         current = {}
         ad = FbApi.db.find(ad_id)
-        current["effective_status"] = ad["status"] if fields.contains?("effective_status")
-        current["previews"] = { "data" => [{ "body" => ad["preview"] }] } if fields.contains?("previews")
+        current["effective_status"] = ad["status"] if fields.include?("effective_status")
+        current["previews"] = { "data" => [{ "body" => ad["preview"] }] } if fields.include?("previews")
         ads << current
       end
       { id: ad_set_id, data: ads }
@@ -176,10 +176,10 @@ module FacebookMock
       adcreatives = []
       ad[:adcreatives].each do |adcreative|
         current = {}
-        current["object_story_spec"] = adcreative["object_story_spec"] if fields.contains?("object_story_spec")
+        current["object_story_spec"] = adcreative[:object_story_spec] if fields.include?("object_story_spec")
         adcreatives << current
       end
-      { id: ad_set_id, data: adcreatives }
+      { id: ad_id, data: adcreatives }
     end
 
     private
