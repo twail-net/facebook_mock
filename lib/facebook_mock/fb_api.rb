@@ -25,8 +25,9 @@ module FacebookMock
       elsif params['edge'] == 'insights'
         FbApi.db.get_insights(params['id'], params["ids"]).to_json
       elsif params['edge'] == 'adcreatives'
-        FbApi.db.get_adcreatives(params['id'], params['fields']).to_json # TODO: test missing
+        FbApi.db.get_adcreatives(params['id'], params['fields']).to_json
       end
+      # TODO: test for specific fields are missing
     end
 
     get "/#{FBV}/:id" do
