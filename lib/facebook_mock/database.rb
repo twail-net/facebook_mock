@@ -6,6 +6,7 @@ module FacebookMock
     def initialize
       @db = {}
       @aliases = {}
+      @classes = {}
       @id = 1
     end
 
@@ -17,6 +18,7 @@ module FacebookMock
 
     def create_fb_page(aliasid, name: nil)
       id = new_alias(aliasid)
+      @classes[id] = "fb_page"
       db[id] = {
         id: id,
         name: name || aliasid,
@@ -25,6 +27,7 @@ module FacebookMock
 
     def create_business_acc(name: nil)
       id = 'act_' + new_id
+      @classes[id] = "business_account"
       db[id] = {
         id: id,
         name: name,
@@ -33,6 +36,7 @@ module FacebookMock
 
     def create_ad_acc(name: nil)
       id = new_id
+      @classes[id] = "ad_account"
       db[id] = {
         id: id,
         name: name,
@@ -41,6 +45,7 @@ module FacebookMock
 
     def create_ad(name: nil)
       id = new_id
+      @classes[id] = "ad"
       db[id] = {
         id: id,
         name: name,
@@ -49,6 +54,7 @@ module FacebookMock
 
     def create_ad_set(name: nil)
       id = new_id
+      @classes[id] = "ad_set"
       db[id] = {
         id: id,
         name: name,
@@ -57,6 +63,7 @@ module FacebookMock
 
     def create_ad_creative(name: nil)
       id = new_id
+      @classes[id] = "ad_creative"
       db[id] = {
         id: id,
         name: name,
@@ -65,6 +72,7 @@ module FacebookMock
 
     def create_campaign(name: nil)
       id = new_id
+      @classes[id] = "campaign"
       db[id] = {
         id: id,
         name: name,
@@ -75,6 +83,7 @@ module FacebookMock
 
     # insights is json with the insights values
     def set_insights(ad_acc_id, object_id, insights)
+      raise ApiError.edge_not_existing("insights") unless @classes[ad_acc_id] == "ad_account"
       ad_acc = FbApi.db.find(ad_acc_id)
       if ad_acc[:insights].nil?
         ad_acc[:insights] = { object_id => insights }
@@ -86,18 +95,21 @@ module FacebookMock
     # assigned users is a json of the assigned users with their respective
     # ids, permitted_roles and access_status
     def set_assigned_users(page_id, assigned_users)
+      raise ApiError.edge_not_existing("assigned_users") unless @classes[page_id] == "fb_page"
       page = FbApi.db.find(page_id)
       page[:assigned_users] = assigned_users
     end
 
     # pages is a list of page_ids
     def set_pages(business_acc_id, pages)
+      raise ApiError.edge_not_existing("pages") unless @classes[business_acc_id] == "business_account"
       business_acc = FbApi.db.find(business_acc_id)
       business_acc[:pages] = pages
     end
 
     # ads is a list of ad ids
     def set_ads(ad_set_id, ads)
+      raise ApiError.edge_not_existing("ads") unless @classes[ad_set_id] == "ad_set"
       ad_set = FbApi.db.find(ad_set_id)
       ad_set[:ads] = ads
     end
@@ -105,20 +117,24 @@ module FacebookMock
     def clear
       @aliases = {}
       @db = {}
+      @classes = {}
     end
 
     # getter
     def get_insights(ad_acc_id, object_ids)
+      raise ApiError.edge_not_existing("insights") unless @classes[ad_acc_id] == "ad_account"
       ad_acc = FbApi.db.find(ad_acc_id)
       return nil if ad_acc[:insights].nil?
       { id: ad_acc_id, insights: object_ids.tr('[]', '').split(",").map { |id| ad_acc[:insights][id] } }
     end
 
     def get_assigned_users(page_id)
-      FbApi.db.find(page_id)[:assigned_users]
+      raise ApiError.edge_not_existing("assigned_users") unless @classes[page_id] == "fb_page"
+      { id: page_id, assigned_users: FbApi.db.find(page_id)[:assigned_users] }
     end
 
     def get_pages(business_acc_id)
+      raise ApiError.edge_not_existing("pages") unless @classes[business_acc_id] == "business_account"
       business_acc = FbApi.db.find(business_acc_id)
       pages = business_acc[:pages]
       ret = []
@@ -129,6 +145,7 @@ module FacebookMock
     end
 
     def get_ads(ad_set_id)
+      raise ApiError.edge_not_existing("ads") unless @classes[ad_set_id] == "ad_set"
       ad_set = FbApi.db.find(ad_set_id)
       ads = ad_set[:ads]
       ret = []

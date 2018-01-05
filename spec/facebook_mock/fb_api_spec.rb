@@ -239,18 +239,67 @@ RSpec.describe FacebookMock::FbApi do
   end
 
   describe 'writing and reading insights' do
-    let(:id) { described_class.db.create_ad_acc[:id] }
+    context 'with an ad account' do
+      let(:id) { described_class.db.create_ad_acc[:id] }
 
-    before { id } # force creation of the ad account
-
-    context 'when the object exists' do
-      before { described_class.db.set_insights(id, '12345', reach: 698_967, impressions: 4_853_894, clicks: 567) }
+      before do
+        id # force creation of the ad account
+        described_class.db.set_insights(id, '12345', reach: 698_967, impressions: 4_853_894, clicks: 567)
+      end
 
       it 'fetches a facebook page using its id' do
         get "/v2.10/#{id}/insights?ids=[12345]"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
         expect(json_body['insights']).to eq([{ "reach" => 698_967, "impressions" => 4_853_894, "clicks" => 567 }])
+      end
+    end
+
+    context 'with a campaign' do
+      let(:id) { described_class.db.create_campaign[:id] }
+
+      before { id } # force creation of the campaign
+
+      it 'is not possible to set the insights' do
+        expect { described_class.db.set_insights(id, '12345', reach: 698_967, impressions: 4_853_894, clicks: 567) }
+          .to raise_error(FacebookMock::ApiError)
+      end
+
+      it 'is not possible to read the insights' do
+        get "/v2.10/#{id}/insights?ids=[12345]"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "(#TODO fix error code) The edge insights, you requested does not exist for this node.",
+            "type" => "GraphMethodException",
+            "code" => 0,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'writing and reading assigned_users' do
+    let(:id) { described_class.db.create_fb_page("mytwail")[:id] }
+
+    before { id } # force creation of the fb page
+
+    context 'when the object exists' do
+      before do
+        described_class.db.set_assigned_users(
+          id,
+          [{ id: 258_924_589, permitted_roles: %w[INSIGHTS_ANALYST ADVERTISER], status: "CONFIRMED" },
+           { id: 485_695_791, permitted_roles: %w[ADVERTISER], status: "PENDING" }]
+        )
+      end
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}/assigned_users"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+        expect(json_body['assigned_users']).to eq(
+          [{ "id" => 258_924_589, "permitted_roles" => %w[INSIGHTS_ANALYST ADVERTISER], "status" => "CONFIRMED" },
+           { "id" => 485_695_791, "permitted_roles" => %w[ADVERTISER], "status" => "PENDING" }]
+        )
       end
     end
   end

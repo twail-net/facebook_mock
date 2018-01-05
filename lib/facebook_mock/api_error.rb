@@ -31,5 +31,13 @@ module FacebookMock
         code: 803,
       )
     end
+
+    def self.edge_not_existing(edge)
+      ApiError.new(
+        message: "(#TODO fix error code) The edge #{edge}, you requested does not exist for this node.",
+        type: "GraphMethodException",
+        code: 0, # TODO
+      )
+    end
   end
 end
