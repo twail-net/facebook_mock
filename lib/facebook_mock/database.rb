@@ -23,52 +23,87 @@ module FacebookMock
       }
     end
 
-    def create_business_acc(aliasid, name: nil)
-      id = new_alias(aliasid)
+    def create_business_acc(name: nil)
+      id = 'act_' + new_id
       db[id] = {
         id: id,
-        name: 'act_' + (name || aliasid),
+        name: name,
       }
     end
 
-    def create_ad_acc(aliasid, name: nil)
-      id = new_alias(aliasid)
+    def create_ad_acc(name: nil)
+      id = new_id
       db[id] = {
         id: id,
-        name: name || aliasid,
+        name: name,
       }
     end
 
-    def create_ad(aliasid, name: nil)
-      id = new_alias(aliasid)
+    def create_ad(name: nil)
+      id = new_id
       db[id] = {
         id: id,
-        name: name || aliasid,
+        name: name,
       }
     end
 
-    def create_ad_set(aliasid, name: nil)
-      id = new_alias(aliasid)
+    def create_ad_set(name: nil)
+      id = new_id
       db[id] = {
         id: id,
-        name: name || aliasid,
+        name: name,
       }
     end
 
-    def create_ad_creative(aliasid, name: nil)
-      id = new_alias(aliasid)
+    def create_ad_creative(name: nil)
+      id = new_id
       db[id] = {
         id: id,
-        name: name || aliasid,
+        name: name,
       }
     end
 
-    def create_ad_campaign(aliasid, name: nil)
-      id = new_alias(aliasid)
+    def create_campaign(name: nil)
+      id = new_id
       db[id] = {
         id: id,
-        name: name || aliasid,
+        name: name,
       }
+    end
+
+    # setter
+
+    # insights is json with the insights values
+    def set_insights(ad_acc_id, object_id, insights)
+      ad_acc = FbApi.db.find(ad_acc_id)
+      if ad_acc['insights'].nil?
+        ad_acc['insights'] = { object_id: insights }
+      else
+        ad_acc['insights'][object_id] = insights
+      end
+      ad_acc.save!
+    end
+
+    # assigned users is a json of the assigned users with their respective 
+    # ids, permitted_roles and access_status
+    def set_assigned_users(page_id, assigned_users)
+      page = FbApi.db.find(page_id)
+      page['assigned_users'] = assigned_users
+      page.save!
+    end
+
+    # pages is a list of page_ids
+    def set_pages(business_acc_id, pages)
+      business_acc = FbApi.db.find(business_acc_id)
+      business_acc['pages'] = pages
+      business_acc.save!
+    end
+
+    # ads is a list of ad ids
+    def set_ads(ad_set_id, ads)
+      ad_set = FbApi.db.find(ad_set_id)
+      ad_set['ads'] = ads
+      ad_set.save!
     end
 
     def clear
@@ -78,8 +113,40 @@ module FacebookMock
 
     private
 
+    # getter
+    def get_insights(ad_acc_id, object_id)
+      ad_acc = FbApi.db.find(ad_acc_id)
+      return nil if ad_acc['insights'].nil?
+      ad_acc['insights'][object_id]
+    end
+
+    def get_assigned_users(page_id)
+      FbApi.db.find(page_id)['assigned_users']
+    end
+
+    def get_pages(business_acc_id)
+      business_acc = FbApi.db.find(business_acc_id)
+      pages = business_acc['pages']
+      ret = []
+      pages.each do |page_id|
+        ret << FbApi.db.find(page_id)
+      end
+      ret
+    end
+
+    def get_ads(ad_set_id)
+      ad_set = FbApi.db.find(ad_set_id)
+      ads = ad_set['ads']
+      ret = []
+      ads.each do |ad_id|
+        ret << FbApi.db.find(ad_id)
+      end
+      ret
+    end
+
     def dealias(id)
       return id if id.match?(/^\d+$/)
+      return id if id.match?(/^(act_*?)?(\d+$)/)
       raise ApiError.alias_not_found(id) unless @aliases.key? id
 
       @aliases[id]
@@ -87,7 +154,7 @@ module FacebookMock
 
     def new_alias(aliasid)
       raise 'Alias must not be empty' if aliasid.nil? || aliasid == ""
-      # raise 'Alias must not be numeric' if aliasid.match?(/^\d+$/) # TODO: why is this checked, because most aliases are numeric
+      raise 'Alias must not be numeric' if aliasid.match?(/^\d+$/)
       raise 'Alias already exists' unless @aliases[aliasid].nil?
 
       @aliases[aliasid] = new_id

@@ -11,7 +11,7 @@ RSpec.describe FacebookMock::FbApi do
 
   after { described_class.db.clear }
 
-  describe 'get object id' do
+  describe 'create facebook page' do
     context 'when the object exists' do
       let(:pageid) { described_class.db.create_fb_page('mytwail')[:id] }
 
@@ -52,6 +52,186 @@ RSpec.describe FacebookMock::FbApi do
             "message" => "(#803) Some of the aliases you requested do not exist: sometwail",
             "type" => "OAuthException",
             "code" => 803,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'create new business account' do
+    context 'when the object exists' do
+      let(:id) { described_class.db.create_business_acc[:id] }
+
+      before { id } # force creation of the facebook page
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+      end
+    end
+
+    context 'when the object does not exist' do
+      it 'returns an error when accessing the object via id' do
+        get "/v2.10/1234"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "https://developers.facebook.com/docs/graph-api",
+            "type" => "GraphMethodException",
+            "code" => 100,
+            "error_subcode" => 33,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'create new ad account' do
+    context 'when the object exists' do
+      let(:id) { described_class.db.create_ad_acc[:id] }
+
+      before { id } # force creation of the facebook page
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+      end
+    end
+
+    context 'when the object does not exist' do
+      it 'returns an error when accessing the object via id' do
+        get "/v2.10/1234"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "https://developers.facebook.com/docs/graph-api",
+            "type" => "GraphMethodException",
+            "code" => 100,
+            "error_subcode" => 33,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'create new ad' do
+    context 'when the object exists' do
+      let(:id) { described_class.db.create_ad[:id] }
+
+      before { id } # force creation of the facebook page
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+      end
+    end
+
+    context 'when the object does not exist' do
+      it 'returns an error when accessing the object via id' do
+        get "/v2.10/1234"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "https://developers.facebook.com/docs/graph-api",
+            "type" => "GraphMethodException",
+            "code" => 100,
+            "error_subcode" => 33,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'create new ad set' do
+    context 'when the object exists' do
+      let(:id) { described_class.db.create_ad_set[:id] }
+
+      before { id } # force creation of the facebook page
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+      end
+    end
+
+    context 'when the object does not exist' do
+      it 'returns an error when accessing the object via id' do
+        get "/v2.10/1234"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "https://developers.facebook.com/docs/graph-api",
+            "type" => "GraphMethodException",
+            "code" => 100,
+            "error_subcode" => 33,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'create new ad creative' do
+    context 'when the object exists' do
+      let(:id) { described_class.db.create_ad_creative[:id] }
+
+      before { id } # force creation of the facebook page
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+      end
+    end
+
+    context 'when the object does not exist' do
+      it 'returns an error when accessing the object via id' do
+        get "/v2.10/1234"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "https://developers.facebook.com/docs/graph-api",
+            "type" => "GraphMethodException",
+            "code" => 100,
+            "error_subcode" => 33,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'create new campaign' do
+    context 'when the object exists' do
+      let(:id) { described_class.db.create_campaign[:id] }
+
+      before { id } # force creation of the facebook page
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+      end
+    end
+
+    context 'when the object does not exist' do
+      it 'returns an error when accessing the object via id' do
+        get "/v2.10/1234"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "Unsupported get request. Object with ID '1234' does not exist, cannot be loaded due to " \
+              "missing permissions, or does not support this operation. Please read the Graph API documentation at " \
+              "https://developers.facebook.com/docs/graph-api",
+            "type" => "GraphMethodException",
+            "code" => 100,
+            "error_subcode" => 33,
           }
         )
       end
