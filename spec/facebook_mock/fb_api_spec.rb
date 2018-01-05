@@ -410,4 +410,44 @@ RSpec.describe FacebookMock::FbApi do
       end
     end
   end
+
+  describe 'writing and reading adcreatives' do
+    context 'with an ad' do
+      let(:id) { described_class.db.create_ad[:id] }
+
+      before { id } # force creation of the ad
+
+      before do
+        described_class.db.set_adcreatives(id, %w[45248 84358 546995])
+      end
+
+      it 'fetches the adcreatives' do
+        get "/v2.10/#{id}/adcreatives"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+        expect(json_body['data']).to eq(%w[45248 84358 546995])
+      end
+    end
+
+    context 'with a campaign' do
+      let(:id) { described_class.db.create_campaign[:id] }
+
+      before { id } # force creation of the campaign
+
+      it 'is not possible to set the adcreatives' do
+        expect { described_class.db.set_adcreatives(id, %w[45248 84358 546995]) }.to raise_error(FacebookMock::ApiError)
+      end
+
+      it 'is not possible to read the adcreatives' do
+        get "/v2.10/#{id}/adcreatives"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "(#803) The edge adcreatives, you requested does not exist for this node.",
+            "type" => "OAuthException",
+            "code" => 803,
+          }
+        )
+      end
+    end
+  end
 end

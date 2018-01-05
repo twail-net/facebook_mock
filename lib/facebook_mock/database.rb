@@ -102,9 +102,9 @@ module FacebookMock
 
     # ad creatives is a list of json of the adcreatives users with their respective object_story_spec
     def set_adcreatives(ad_id, adcreatives)
-      raise ApiError.edge_not_existing("adcreatives") unless @classes[page_id] == "ad"
-      page = FbApi.db.find(ad_id)
-      page[:adcreatives] = adcreatives
+      raise ApiError.edge_not_existing("adcreatives") unless @classes[ad_id] == "ad"
+      ad = FbApi.db.find(ad_id)
+      ad[:adcreatives] = adcreatives
     end
 
     # pages is a list of page_ids
@@ -169,7 +169,7 @@ module FacebookMock
       { id: ad_set_id, data: ads }
     end
 
-    def get_adcreatives(ad_id)
+    def get_adcreatives(ad_id, fields)
       raise ApiError.edge_not_existing("adcreatives") unless @classes[ad_id] == "ad"
       ad = FbApi.db.find(ad_id)
       return { id: ad_id, data: ad[:adcreatives] } if fields.nil?
