@@ -415,33 +415,24 @@ RSpec.describe FacebookMock::FbApi do
     context 'with an ad without fields' do
       let(:id) { described_class.db.create_ad[:id] }
 
-      before { id } # force creation of the ad
-
       before do
-        described_class.db.set_adcreatives(id, %w[45248 84358 546995])
+        id # force creation of the ad
+        described_class.db.set_adcreatives(
+          id,
+          [{ id: '32164173',
+             object_story_spec: { page_id: '1342355463',
+                                  link_data: { link: "https:example.com/test1", message: 'sample message 1' } } },
+           { id: '32164173',
+             object_story_spec: { page_id: '1342309463',
+                                  link_data: { link: "https:example.com/test2", message: 'sample message 2' } } }]
+        )
       end
 
       it 'fetches the adcreatives' do
         get "/v2.10/#{id}/adcreatives"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['data']).to eq(%w[45248 84358 546995])
-      end
-    end
-
-    context 'with an ad with fields' do
-      let(:id) { described_class.db.create_ad[:id] }
-
-      before { id } # force creation of the ad
-
-      before do
-        described_class.db.set_adcreatives(
-          id,
-          [{ object_story_spec: { page_id: '1342355463',
-                                  link_data: { link: "https:example.com/test1", message: 'sample message 1' } } },
-           { object_story_spec: { page_id: '1342309463',
-                                  link_data: { link: "https:example.com/test2", message: 'sample message 2' } } }]
-        )
+        expect(json_body['data']).to eq([{ "id" => '32164173'}, { "id" => '32164173' }])
       end
 
       it 'fetches the adcreatives fields' do
@@ -449,10 +440,12 @@ RSpec.describe FacebookMock::FbApi do
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
         expect(json_body['data']).to eq(
-          [{ "object_story_spec" => { "page_id" => '1342355463',
+          [{ "id" => '32164173',
+             "object_story_spec" => { "page_id" => '1342355463',
                                       "link_data" => { "link" => "https:example.com/test1",
                                                        "message" => 'sample message 1' } } },
-           { "object_story_spec" => { "page_id" => '1342309463',
+           { "id" => '32164173',
+             "object_story_spec" => { "page_id" => '1342309463',
                                       "link_data" => { "link" => "https:example.com/test2",
                                                        "message" => 'sample message 2' } } }]
         )

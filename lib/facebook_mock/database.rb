@@ -137,7 +137,7 @@ module FacebookMock
 
     def get_assigned_users(page_id, fields)
       raise ApiError.edge_not_existing("assigned_users") unless @classes[page_id] == "fb_page"
-      return { id: page_id, data: FbApi.db.find(page_id)[:assigned_users] } if fields.nil?
+      return { id: page_id, data: FbApi.db.find(page_id)[:assigned_users] } if fields.nil? # TODO: this method sends to much data
       users = []
       FbApi.db.find(page_id)[:assigned_users].each do |user|
         current = {}
@@ -157,7 +157,7 @@ module FacebookMock
     def get_ads(ad_set_id, fields)
       raise ApiError.edge_not_existing("ads") unless @classes[ad_set_id] == "ad_set"
       ad_set = FbApi.db.find(ad_set_id)
-      return { id: ad_set_id, data: ad_set[:ads] } if fields.nil?
+      return { id: ad_set_id, data: ad_set[:ads] } if fields.nil? # TODO: this method sends to much data
       ads = []
       ad_set[:ads].each do |ad_id|
         current = {}
@@ -172,11 +172,10 @@ module FacebookMock
     def get_adcreatives(ad_id, fields)
       raise ApiError.edge_not_existing("adcreatives") unless @classes[ad_id] == "ad"
       ad = FbApi.db.find(ad_id)
-      return { id: ad_id, data: ad[:adcreatives] } if fields.nil?
       adcreatives = []
       ad[:adcreatives].each do |adcreative|
-        current = {}
-        current["object_story_spec"] = adcreative[:object_story_spec] if fields.include?("object_story_spec")
+        current = { id: adcreative[:id] }
+        current["object_story_spec"] = adcreative[:object_story_spec] if (fields || []).include?("object_story_spec")
         adcreatives << current
       end
       { id: ad_id, data: adcreatives }
