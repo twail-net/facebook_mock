@@ -136,13 +136,13 @@ module FacebookMock
     def get_pages(business_acc_id)
       raise ApiError.edge_not_existing("pages") unless @classes[business_acc_id] == "business_account"
       business_acc = FbApi.db.find(business_acc_id)
-      business_acc[:pages].map { |page_id| FbApi.db.find(page_id) }
+      { id: business_acc_id, pages: business_acc[:pages] }
     end
 
     def get_ads(ad_set_id)
       raise ApiError.edge_not_existing("ads") unless @classes[ad_set_id] == "ad_set"
       ad_set = FbApi.db.find(ad_set_id)
-      ad_set[:ads].map { |ad_id| FbApi.db.find(ad_id) }
+      { id: ad_set_id, ads: ad_set[:ads] }
     end
 
     private
