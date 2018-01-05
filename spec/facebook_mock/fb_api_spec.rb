@@ -247,7 +247,7 @@ RSpec.describe FacebookMock::FbApi do
         described_class.db.set_insights(id, '12345', reach: 698_967, impressions: 4_853_894, clicks: 567)
       end
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches the insights' do
         get "/v2.10/#{id}/insights?ids=[12345]"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -292,7 +292,7 @@ RSpec.describe FacebookMock::FbApi do
         )
       end
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches the assigned users' do
         get "/v2.10/#{id}/assigned_users"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -341,7 +341,7 @@ RSpec.describe FacebookMock::FbApi do
         described_class.db.set_ads(id, %w[45248 84358 546995])
       end
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches the ads using its id' do
         get "/v2.10/#{id}/ads"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -363,6 +363,46 @@ RSpec.describe FacebookMock::FbApi do
         expect(json_body).to eq(
           "error" => {
             "message" => "(#803) The edge ads, you requested does not exist for this node.",
+            "type" => "OAuthException",
+            "code" => 803,
+          }
+        )
+      end
+    end
+  end
+
+  describe 'writing and reading pages' do
+    context 'with a business_account' do
+      let(:id) { described_class.db.create_business_acc[:id] }
+
+      before { id } # force creation of the business_acc
+
+      before do
+        described_class.db.set_pages(id, %w[45248 84358 546995])
+      end
+
+      it 'fetches the pages' do
+        get "/v2.10/#{id}/pages"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+        expect(json_body['ads']).to eq(%w[45248 84358 546995])
+      end
+    end
+
+    context 'with a campaign' do
+      let(:id) { described_class.db.create_campaign[:id] }
+
+      before { id } # force creation of the campaign
+
+      it 'is not possible to set the pages' do
+        expect { described_class.db.set_pages(id, %w[45248 84358 546995]) }.to raise_error(FacebookMock::ApiError)
+      end
+
+      it 'is not possible to read the pages' do
+        get "/v2.10/#{id}/pages"
+        expect(json_body).to eq(
+          "error" => {
+            "message" => "(#803) The edge pages, you requested does not exist for this node.",
             "type" => "OAuthException",
             "code" => 803,
           }

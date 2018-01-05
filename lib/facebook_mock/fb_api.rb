@@ -19,7 +19,7 @@ module FacebookMock
       if params['edge'] == 'ads'
         FbApi.db.get_ads(params['id']).to_json
       elsif params['edge'] == 'pages'
-        FbApi.db.get_pages(params['id']).to_json # TODO add tests
+        FbApi.db.get_pages(params['id']).to_json
       elsif params['edge'] == 'assigned_users'
         FbApi.db.get_assigned_users(params['id']).to_json
       elsif params['edge'] == 'insights'
