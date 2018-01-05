@@ -338,14 +338,14 @@ RSpec.describe FacebookMock::FbApi do
       before { id } # force creation of the ad_set
 
       before do
-        described_class.db.set_ads(id, %w[45248 84358 546995])
+        described_class.db.set_ads(id, %w[45248 84358 546995]) # TODO
       end
 
       it 'fetches the ads using its id' do
         get "/v2.10/#{id}/ads"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['data']).to eq(%w[45248 84358 546995])
+        expect(json_body['data']).to eq(%w[45248 84358 546995]) # TODO
       end
     end
 
@@ -378,14 +378,14 @@ RSpec.describe FacebookMock::FbApi do
       before { id } # force creation of the business_acc
 
       before do
-        described_class.db.set_pages(id, %w[45248 84358 546995])
+        described_class.db.set_pages(id, %w[45248 84358 546995]) # TODO
       end
 
       it 'fetches the pages' do
         get "/v2.10/#{id}/pages"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['data']).to eq(%w[45248 84358 546995])
+        expect(json_body['data']).to eq(%w[45248 84358 546995]) # TODO
       end
     end
 
@@ -432,7 +432,7 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/#{id}/adcreatives"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['data']).to eq([{ "id" => '32164173'}, { "id" => '32164173' }])
+        expect(json_body['data']).to eq([{ "id" => '32164173' }, { "id" => '32164173' }])
       end
 
       it 'fetches the adcreatives fields' do
