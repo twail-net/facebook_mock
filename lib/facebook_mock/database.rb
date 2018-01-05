@@ -23,6 +23,54 @@ module FacebookMock
       }
     end
 
+    def create_business_acc(aliasid, name: nil)
+      id = new_alias(aliasid)
+      db[id] = {
+        id: id,
+        name: 'act_' + (name || aliasid),
+      }
+    end
+
+    def create_ad_acc(aliasid, name: nil)
+      id = new_alias(aliasid)
+      db[id] = {
+        id: id,
+        name: name || aliasid,
+      }
+    end
+
+    def create_ad(aliasid, name: nil)
+      id = new_alias(aliasid)
+      db[id] = {
+        id: id,
+        name: name || aliasid,
+      }
+    end
+
+    def create_ad_set(aliasid, name: nil)
+      id = new_alias(aliasid)
+      db[id] = {
+        id: id,
+        name: name || aliasid,
+      }
+    end
+
+    def create_ad_creative(aliasid, name: nil)
+      id = new_alias(aliasid)
+      db[id] = {
+        id: id,
+        name: name || aliasid,
+      }
+    end
+
+    def create_ad_campaign(aliasid, name: nil)
+      id = new_alias(aliasid)
+      db[id] = {
+        id: id,
+        name: name || aliasid,
+      }
+    end
+
     def clear
       @aliases = {}
       @db = {}
@@ -39,7 +87,7 @@ module FacebookMock
 
     def new_alias(aliasid)
       raise 'Alias must not be empty' if aliasid.nil? || aliasid == ""
-      raise 'Alias must not be numeric' if aliasid.match?(/^\d+$/)
+      # raise 'Alias must not be numeric' if aliasid.match?(/^\d+$/) # TODO: why is this checked, because most aliases are numeric
       raise 'Alias already exists' unless @aliases[aliasid].nil?
 
       @aliases[aliasid] = new_id
