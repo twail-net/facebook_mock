@@ -385,7 +385,7 @@ RSpec.describe FacebookMock::FbApi do
         get "/v2.10/#{id}/pages"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
-        expect(json_body['ads']).to eq(%w[45248 84358 546995])
+        expect(json_body['pages']).to eq(%w[45248 84358 546995])
       end
     end
 
