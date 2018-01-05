@@ -76,34 +76,30 @@ module FacebookMock
     # insights is json with the insights values
     def set_insights(ad_acc_id, object_id, insights)
       ad_acc = FbApi.db.find(ad_acc_id)
-      if ad_acc['insights'].nil?
-        ad_acc['insights'] = { object_id: insights }
+      if ad_acc[:insights].nil?
+        ad_acc[:insights] = { object_id => insights }
       else
-        ad_acc['insights'][object_id] = insights
+        ad_acc[:insights][object_id] = insights
       end
-      ad_acc.save!
     end
 
-    # assigned users is a json of the assigned users with their respective 
+    # assigned users is a json of the assigned users with their respective
     # ids, permitted_roles and access_status
     def set_assigned_users(page_id, assigned_users)
       page = FbApi.db.find(page_id)
-      page['assigned_users'] = assigned_users
-      page.save!
+      page[:assigned_users] = assigned_users
     end
 
     # pages is a list of page_ids
     def set_pages(business_acc_id, pages)
       business_acc = FbApi.db.find(business_acc_id)
-      business_acc['pages'] = pages
-      business_acc.save!
+      business_acc[:pages] = pages
     end
 
     # ads is a list of ad ids
     def set_ads(ad_set_id, ads)
       ad_set = FbApi.db.find(ad_set_id)
-      ad_set['ads'] = ads
-      ad_set.save!
+      ad_set[:ads] = ads
     end
 
     def clear
@@ -111,22 +107,20 @@ module FacebookMock
       @db = {}
     end
 
-    private
-
     # getter
-    def get_insights(ad_acc_id, object_id)
+    def get_insights(ad_acc_id, object_ids)
       ad_acc = FbApi.db.find(ad_acc_id)
-      return nil if ad_acc['insights'].nil?
-      ad_acc['insights'][object_id]
+      return nil if ad_acc[:insights].nil?
+      { id: ad_acc_id, insights: object_ids.tr('[]', '').split(",").map { |id| ad_acc[:insights][id] } }
     end
 
     def get_assigned_users(page_id)
-      FbApi.db.find(page_id)['assigned_users']
+      FbApi.db.find(page_id)[:assigned_users]
     end
 
     def get_pages(business_acc_id)
       business_acc = FbApi.db.find(business_acc_id)
-      pages = business_acc['pages']
+      pages = business_acc[:pages]
       ret = []
       pages.each do |page_id|
         ret << FbApi.db.find(page_id)
@@ -136,13 +130,15 @@ module FacebookMock
 
     def get_ads(ad_set_id)
       ad_set = FbApi.db.find(ad_set_id)
-      ads = ad_set['ads']
+      ads = ad_set[:ads]
       ret = []
       ads.each do |ad_id|
         ret << FbApi.db.find(ad_id)
       end
       ret
     end
+
+    private
 
     def dealias(id)
       return id if id.match?(/^\d+$/)

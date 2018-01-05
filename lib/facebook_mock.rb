@@ -5,5 +5,4 @@ require "facebook_mock/fb_api"
 
 module FacebookMock
   # Your code goes here...
-
 end

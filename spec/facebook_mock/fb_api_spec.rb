@@ -62,9 +62,9 @@ RSpec.describe FacebookMock::FbApi do
     context 'when the object exists' do
       let(:id) { described_class.db.create_business_acc[:id] }
 
-      before { id } # force creation of the facebook page
+      before { id } # force creation of the business account
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches a business account using its id' do
         get "/v2.10/#{id}"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -92,9 +92,9 @@ RSpec.describe FacebookMock::FbApi do
     context 'when the object exists' do
       let(:id) { described_class.db.create_ad_acc[:id] }
 
-      before { id } # force creation of the facebook page
+      before { id } # force creation of the ad account
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches an ad account using its id' do
         get "/v2.10/#{id}"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -122,9 +122,9 @@ RSpec.describe FacebookMock::FbApi do
     context 'when the object exists' do
       let(:id) { described_class.db.create_ad[:id] }
 
-      before { id } # force creation of the facebook page
+      before { id } # force creation of the ad
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches an ad using its id' do
         get "/v2.10/#{id}"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -152,9 +152,9 @@ RSpec.describe FacebookMock::FbApi do
     context 'when the object exists' do
       let(:id) { described_class.db.create_ad_set[:id] }
 
-      before { id } # force creation of the facebook page
+      before { id } # force creation of the ad set
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches an ad set using its id' do
         get "/v2.10/#{id}"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -182,9 +182,9 @@ RSpec.describe FacebookMock::FbApi do
     context 'when the object exists' do
       let(:id) { described_class.db.create_ad_creative[:id] }
 
-      before { id } # force creation of the facebook page
+      before { id } # force creation of the ad creative
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches an ad creative using its id' do
         get "/v2.10/#{id}"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -212,9 +212,9 @@ RSpec.describe FacebookMock::FbApi do
     context 'when the object exists' do
       let(:id) { described_class.db.create_campaign[:id] }
 
-      before { id } # force creation of the facebook page
+      before { id } # force creation of the campaign
 
-      it 'fetches a facebook page using its id' do
+      it 'fetches a campaign using its id' do
         get "/v2.10/#{id}"
         expect(last_response).to be_ok
         expect(json_body['id']).to eq(id)
@@ -234,6 +234,23 @@ RSpec.describe FacebookMock::FbApi do
             "error_subcode" => 33,
           }
         )
+      end
+    end
+  end
+
+  describe 'writing and reading insights' do
+    let(:id) { described_class.db.create_ad_acc[:id] }
+
+    before { id } # force creation of the ad account
+
+    context 'when the object exists' do
+      before { described_class.db.set_insights(id, '12345', reach: 698_967, impressions: 4_853_894, clicks: 567) }
+
+      it 'fetches a facebook page using its id' do
+        get "/v2.10/#{id}/insights?ids=[12345]"
+        expect(last_response).to be_ok
+        expect(json_body['id']).to eq(id)
+        expect(json_body['insights']).to eq([{ "reach" => 698_967, "impressions" => 4_853_894, "clicks" => 567 }])
       end
     end
   end
